@@ -203,7 +203,7 @@ class WorkUnit( object ):
             encoder.tag( decoder.FlacDecoder(file_).tags )
             encoder.set_cover(True, self._opts.art_resize)  # force new cover
          else: # update cover if newer
-            encoder.set_cover()
+            encoder.set_cover(False, self._opts.art_resize)
       except KeyboardInterrupt:
          self.abort = True
       except Exception as exc:
