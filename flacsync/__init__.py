@@ -144,7 +144,7 @@ DEFAULT_ENCODER = 'aac'
 # define a mapping of enocoder-types to implementation class name.
 ENCODERS = {'aac':encoder.AacEncoder,
             'ogg':encoder.OggEncoder,
-            'mp3':encoder.MP3Encoder,
+            'mp3':encoder.Mp3Encoder,
          }
 CORES = mp.cpu_count()
 
