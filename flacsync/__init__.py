@@ -476,7 +476,7 @@ def get_opts( argv ):
    helpstr = """
       set the AAC encoder quality value, must be a float range of 0..1
       [default:%default]"""
-   aac_group.add_option( '-q', '--aac-quality', dest='aac_q', default='0.35',
+   aac_group.add_option( '-q', '--aac-quality', dest='aac_q', default='0.5',
          action='callback', callback=store_enc_opt, callback_args=('aac',),
          type='string', help=_help_str(helpstr) )
    parser.add_option_group( aac_group )
