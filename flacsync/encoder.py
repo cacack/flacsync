@@ -182,8 +182,8 @@ class AacEncoder( _Encoder ):
       :type  force:  boolean
       """
       if self.cover and (force or util.newer(self.cover,self.dst)):
-		 if self.cover_dst and not os.path.isfile(self.cover_dst):
-		    shutil.copyfile(self.cover, self.cover_dst)
+         if self.cover_dst and not os.path.isfile(self.cover_dst):
+            shutil.copyfile(self.cover, self.cover_dst)
          tmp_cover = self._cover_thumbnail(resize)
          err = sp.call( 'neroAacTag "%s" -remove-cover:all -add-cover:front:"%s"' %
                   (self.dst, tmp_cover.name,), shell=True, stderr=NULL)
@@ -269,8 +269,8 @@ class OggEncoder( _Encoder ):
       mime = 'image/jpeg'
       description = "album cover"
       if self.cover and (force or util.newer(self.cover,self.dst)):
-		 if self.cover_dst and not os.path.isfile(self.cover_dst):
-		    shutil.copyfile(self.cover, self.cover_dst)
+	 if self.cover_dst and not os.path.isfile(self.cover_dst):
+	    shutil.copyfile(self.cover, self.cover_dst)
          tmp_cover = self._cover_thumbnail(resize)
          bin_cover = tmp_cover.read()
          meta_block = struct.pack(
