@@ -28,7 +28,7 @@ NULL = file('/dev/null')
 #: List of album covers, in preferential order.
 COVERS = ['cover.jpg', 'folder.jpg', 'front.jpg', 'album.jpg']
 #: Resolution of re-sized album covers.
-THUMBSIZE = 250,250
+THUMBSIZE = 500,500
 
 
 #############################################################################
@@ -329,7 +329,7 @@ class Mp3Encoder( _Encoder ):
          tmp_cover = self._cover_thumbnail()
          imagedata = open(tmp_cover.name, 'rb').read()
          audio = MP3(self.dst)
-         audio.tags.add(APIC(encoding=3, mime="image/jpeg", type=3, desc="Front Cover", data=imagedata))
+         audio.tags.add(APIC(encoding=3, mime="image/jpeg", type=3, desc=u'Front Cover', data=imagedata))
          err = audio.save()
      return self._check_err( err, "MP3 add-cover failed:" )
 
