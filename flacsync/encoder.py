@@ -334,11 +334,11 @@ class Mp3Encoder( _Encoder ):
    # for more details regarding embedded ID3 pictures
    def set_cover( self, force=False, resize=False ):
      if self.cover and (force or util.newer(self.cover,self.dst)):
-		 if self.cover_dst and not os.path.isfile(self.cover_dst):
-		    shutil.copyfile(self.cover, self.cover_dst)
-		 tmp_cover = self._cover_thumbnail(resize)
-		 imagedata = open(tmp_cover.name, 'rb').read()
-		 audio = MP3(self.dst)
-         audio.tags.add(APIC(encoding=3, mime="image/jpeg", type=3, desc=u'Front Cover', data=imagedata))
-		 err = audio.save()
+	if self.cover_dst and not os.path.isfile(self.cover_dst):
+	   shutil.copyfile(self.cover, self.cover_dst)
+	tmp_cover = self._cover_thumbnail(resize)
+	imagedata = open(tmp_cover.name, 'rb').read()
+	audio = MP3(self.dst)
+        audio.tags.add(APIC(encoding=3, mime="image/jpeg", type=3, desc=u'Front Cover', data=imagedata))
+	err = audio.save()
      return self._check_err( err, "MP3 add-cover failed:" )
