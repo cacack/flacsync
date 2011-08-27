@@ -3,7 +3,7 @@
 #
 
 NAME=flacsync
-VER=0.3.1
+VER=0.3.2
 DIST_DIR=dist
 TAR=${DIST_DIR}/${NAME}-${VER}.tar.gz
 HTML_ZIP=${DIST_DIR}/${NAME}-html-${VER}.zip
@@ -33,7 +33,7 @@ cover:
 	nosetests -w ${NAME} --with-coverage --cover-package=${NAME} --cover-erase --cover-inclusive
 
 .PHONY: install
-install:
+install: test
 	python setup.py install --user
 
 .PHONY: clean
@@ -62,7 +62,7 @@ dist: doc
 	make clean
 
 .PHONY: dist-test
-dist-test:
+dist-test: dist
 	tar xzf ${TAR} -C ${DIST_DIR}
 	make -C ${SRC_DIR} install
 	rm -rf ${SRC_DIR}

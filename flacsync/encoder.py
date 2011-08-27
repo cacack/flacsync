@@ -45,13 +45,18 @@ class _Encoder(object):
       self.dst = util.fname(src, base_dir, dest_dir, ext)
       self.cover = self._get_cover() or None
       if self.cover:
-		  self.cover_dst = util.fname(self.cover, base_dir, dest_dir)
+         self.cover_dst = util.fname(self.cover, base_dir, dest_dir)
 
    def skip_encode( self ):
       """Return 'True' if entire encode step can be skipped."""
       encode = util.newer(self.src, self.dst)
       cover  = self.cover and util.newer(self.cover, self.dst)
       return not (encode or cover)
+
+   def copy_cover( self, force=False ):
+      """Copies cover art to destination folder."""
+      if self.cover and (force or util.newer(self.cover,self.cover_dst)):
+         shutil.copyfile(self.cover, self.cover_dst)
 
    def _get_cover( self ):
       root,_,files = os.walk( os.path.dirname(self.src)).next()
@@ -81,7 +86,7 @@ class _Encoder(object):
       assert self.cover    # cover must be valid
       im = Image.open( self.cover)
       if resize:
-		  im.thumbnail( THUMBSIZE)
+         im.thumbnail( THUMBSIZE)
       ofile = tempfile.NamedTemporaryFile()
       im.save( ofile.name, "JPEG")
       return ofile
@@ -180,6 +185,10 @@ class AacEncoder( _Encoder ):
       :param force:  When :data:`True`, encoding will be done, even if
                      destination file exists.
       :type  force:  boolean
+
+      :param resize:  When :data:`True`, cover art will be resized to
+                      predefined size.
+      :type  resize:  boolean
       """
       if self.cover and (force or util.newer(self.cover,self.dst)):
          if self.cover_dst and not os.path.isfile(self.cover_dst):
@@ -252,6 +261,10 @@ class OggEncoder( _Encoder ):
       :param force:  When :data:`True`, encoding will be done, even if
                      destination file exists.
       :type  force:  boolean
+
+      :param resize:  When :data:`True`, cover art will be resized to
+                      predefined size.
+      :type  resize:  boolean
       """
       # define METADATA_BLOCK_PICTURE binary structure
       #     int:     Picture type, 0-20 (3=cover front)
@@ -291,12 +304,29 @@ from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
 from mutagen.id3 import APIC
 class Mp3Encoder( _Encoder ):
+   """
+   FLAC to MP3 encoder.
+   """
    def __init__( self, mp3_q, **kwargs  ):
+      """
+      :param mp3_q:  MP3 VBR encoder quality value [0 - 9]
+      :type  mp3_q:  str
+      """
       super( Mp3Encoder, self).__init__( ext='.mp3', **kwargs)
       assert type(mp3_q) == str, "q value is: %s" % (mp3_q,)
       self.q = mp3_q
 
    def encode( self, force=False ):
+      """
+      Performs audio encoding process.
+
+      :param force:  When :data:`True`, encoding will be done, even if
+                     destination file exists.
+      :type  force:  boolean
+
+      :return: :data:`True` if (re)encoding occurred and no errors,
+               :data:`False` otherwise
+      """
       if force or util.newer( self.src, self.dst):
          self._pre_encode()
          # encode to MP3
@@ -312,6 +342,12 @@ class Mp3Encoder( _Encoder ):
 
    # uses mutagen tagging library
    def tag( self, tags):
+      """
+      Copies FLAC tags into destination MP3 file.
+
+      :param tags: Source tag values from FLAC file.
+      :type  tags: dict
+      """
       mp3_fields = {
          'artist':tags['artist'],         'title':tags['title'],
          'album':tags['album'],           'date':tags['year'],
@@ -333,12 +369,25 @@ class Mp3Encoder( _Encoder ):
    # See section 4.14 at http://www.id3.org/id3v2.4.0-frames
    # for more details regarding embedded ID3 pictures
    def set_cover( self, force=False, resize=False ):
-     if self.cover and (force or util.newer(self.cover,self.dst)):
-	if self.cover_dst and not os.path.isfile(self.cover_dst):
-	   shutil.copyfile(self.cover, self.cover_dst)
-	tmp_cover = self._cover_thumbnail(resize)
-	imagedata = open(tmp_cover.name, 'rb').read()
-	audio = MP3(self.dst)
-        audio.tags.add(APIC(encoding=3, mime="image/jpeg", type=3, desc=u'Front Cover', data=imagedata))
-	err = audio.save()
-     return self._check_err( err, "MP3 add-cover failed:" )
+      """
+      Attach album cover image to MP3 file.
+
+      :param force:  When :data:`True`, encoding will be done, even if
+                     destination file exists.
+      :type  force:  boolean
+
+      :param resize:  When :data:`True`, cover art will be resized to
+                      predefined size.
+      :type  resize:  boolean
+      """
+      if self.cover and (force or util.newer(self.cover,self.dst)):
+         if self.cover_dst and not os.path.isfile(self.cover_dst):
+            shutil.copyfile(self.cover, self.cover_dst)
+         tmp_cover = self._cover_thumbnail(resize)
+         imagedata = open(tmp_cover.name, 'rb').read()
+         pic = APIC(encoding=3, mime="image/jpeg", type=3, desc=u"Front Cover",
+                    data=imagedata)
+         audio = MP3(self.dst)
+         audio.tags.add(pic)
+         err = audio.save()
+      return self._check_err( err, "MP3 add-cover failed:" )
