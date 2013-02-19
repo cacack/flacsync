@@ -1,5 +1,5 @@
 
-Recursively mirror a directory tree of FLAC audio files to AAC/OGG/MP3.
+Recursively mirror a directory tree of FLAC audio files to AAC/MP3/OGG/Opus.
 Source files can be filtered (by sub-directory, or full path) in order to
 limit the files converted. The script will also attempt to retain all
 meta-data fields in the output files.
@@ -7,10 +7,10 @@ meta-data fields in the output files.
 At a Glance
 ===========
 
-* Mirror directory tree of FLAC files audio files to AAC/OGG/MP3 (re-encoded
-  using NeroAacEnc, oggenc, or LAME).
+* Mirror directory tree of FLAC files audio files to AAC/MP3/OGG/Opus (re-encoded
+  using NeroAacEnc, LAME, oggenc, or opusenc).
 * Filter source tree using one or more sub-directory paths.
-* By default, will only re-encode missing or out-of-date AAC/OGG/MP3 files.
+* By default, will only re-encode missing or out-of-date AAC/MP3/OGG/Opus files.
 * Optionally deletes orphaned output files.
 * Multi-threaded encoding ensures full CPU utilization.
 * Supports transfer of FLAC meta-data including *title*, *artist*, *album*.
@@ -25,9 +25,9 @@ Usage Model
 * Hard disk space is cheap, but flash-based media players are still limited
   in capacity.
 * Create a lossy encoded "mirror" of your music files for portability.
-* Setup a daily cron job to always keep your FLAC and AAC/OGG files
+* Setup a daily cron job to always keep your FLAC and AAC/MP3/OGG/Opus files
   synchronized.
-* Re-encode your FLAC library to different AAC/OGG bit-rates in one command.
+* Re-encode your FLAC library to different AAC/MP3/OGG/Opus bit-rates in one command.
 
 Running and Options
 ===================
@@ -67,7 +67,7 @@ directory.
 
 -t ENC_TYPE, --type=ENC_TYPE
                      select the output transcode format; supported values
-                     are 'aac','ogg','mp3' [default:aac]
+                     are 'aac','mp3', 'ogg','opus' [default:aac]
 
 -o, --ignore-orphans
                      prevent the removal of files and directories in the
@@ -94,17 +94,23 @@ AAC Encoder Options:
                      set the AAC encoder quality value, must be a float
                      range of 0..1 [default:0.35]
 
+MP3 Encoder Options:
+--------------------
+ -m MP3_Q, --mp3-quality=MP3_Q
+                     set the Lame MP3 encoder quality value, must be a
+                     initeger range of 0..9 [default:3]
+
 OGG Encoder Options:
 --------------------
  -g OGG_Q, --ogg-quality=OGG_Q
                      set the Ogg Vorbis encoder quality value, must be a
                      float range of -1..10 [default:5]
 
-MP3 Encoder Options:
+Opus Encoder Options:
 --------------------
- -m MP3_Q, --mp3-quality=MP3_Q
-                     set the Lame MP3 encoder quality value, must be a
-                     initeger range of 0..9 [default:3]
+ -b OPUS_Q, --opus-bitrate=OPUS_Q
+                     set the Opus encoder quality value, must be a
+                     float range of 6..256 [default:128]
 
 
 Examples
