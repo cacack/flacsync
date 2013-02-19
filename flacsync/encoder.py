@@ -29,7 +29,7 @@ NULL = file('/dev/null')
 #: List of album covers, in preferential order.
 COVERS = ['cover.jpg', 'folder.jpg', 'front.jpg', 'album.jpg']
 #: Resolution of re-sized album covers.
-THUMBSIZE = 250,250
+THUMBSIZE = 500,500
 
 
 #############################################################################
@@ -191,6 +191,8 @@ class AacEncoder( _Encoder ):
       :type  resize:  boolean
       """
       if self.cover and (force or util.newer(self.cover,self.dst)):
+         if self.cover_dst and not os.path.isfile(self.cover_dst):
+            shutil.copyfile(self.cover, self.cover_dst)
          tmp_cover = self._cover_thumbnail(resize)
          err = sp.call( 'neroAacTag "%s" -remove-cover:all -add-cover:front:"%s"' %
                   (self.dst, tmp_cover.name,), shell=True, stderr=NULL)
@@ -280,6 +282,8 @@ class OggEncoder( _Encoder ):
       mime = 'image/jpeg'
       description = "album cover"
       if self.cover and (force or util.newer(self.cover,self.dst)):
+         if self.cover_dst and not os.path.isfile(self.cover_dst):
+            shutil.copyfile(self.cover, self.cover_dst)
          tmp_cover = self._cover_thumbnail(resize)
          bin_cover = tmp_cover.read()
          meta_block = struct.pack(
@@ -377,6 +381,8 @@ class Mp3Encoder( _Encoder ):
       :type  resize:  boolean
       """
       if self.cover and (force or util.newer(self.cover,self.dst)):
+         if self.cover_dst and not os.path.isfile(self.cover_dst):
+            shutil.copyfile(self.cover, self.cover_dst)
          tmp_cover = self._cover_thumbnail(resize)
          imagedata = open(tmp_cover.name, 'rb').read()
          pic = APIC(encoding=3, mime="image/jpeg", type=3, desc=u"Front Cover",

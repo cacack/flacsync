@@ -221,9 +221,12 @@ class WorkUnit( object ):
             encoder.set_cover(True, self._opts.art_resize)  # force new cover
          else: # update cover if newer
             encoder.set_cover(False, self._opts.art_resize)
+<<<<<<< HEAD
+=======
          # copy cover art
          if self._opts.art_copy:
             encoder.copy_cover( self._opts.force )
+>>>>>>> upstream/dev
       except KeyboardInterrupt:
          self.abort = True
       except Exception as exc:
@@ -484,6 +487,12 @@ def get_opts( argv ):
       parent directory of BASE_DIR. See BASE_DIR above."""
    parser.add_option( '-d', '--destination', dest='dest_dir',
          help=_help_str(helpstr) )
+   
+   helpstr = """
+      enable resizing of cover art; by default the art that is found will be
+      saved to file without resizing."""
+   parser.add_option( '-r', '--resize', dest='art_resize', default=False,
+         action="store_true", help=_help_str(helpstr) )
 
    helpstr = """
       enable resizing of cover art; by default the art that is found will be
@@ -502,7 +511,7 @@ def get_opts( argv ):
    helpstr = """
       set the AAC encoder quality value, must be a float range of 0..1
       [default:%default]"""
-   aac_group.add_option( '-q', '--aac-quality', dest='aac_q', default='0.35',
+   aac_group.add_option( '-q', '--aac-quality', dest='aac_q', default='0.5',
          action='callback', callback=store_enc_opt, callback_args=('aac',),
          type='string', help=_help_str(helpstr) )
    parser.add_option_group( aac_group )
