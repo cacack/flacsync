@@ -329,7 +329,7 @@ class OpusEncoder( _Encoder ):
          if err == -2:  # keyboard interrupt
             os.remove(self.dst) # clean-up partial file
             raise KeyboardInterrupt
-         return self._check_err( err, "OGG encoder failed:" )
+         return self._check_err( err, "Opus encoder failed:" )
       else:
          return False
 
