@@ -295,6 +295,60 @@ class OggEncoder( _Encoder ):
                  (meta_block, self.dst), shell=True, stderr=NULL)
          return self._check_err( err, "OGG add-cover failed:" )
 
+import base64
+import struct
+class OpusEncoder( _Encoder ):
+   """
+   FLAC to Opus encoder.
+   """
+   def __init__( self, opus_q, **kwargs  ):
+      """
+      :param opus_q:  Opus encoder quality value [1 - 10]
+      :type  opus_q:  str
+      """
+      super( OpusEncoder, self).__init__( ext='.opus', **kwargs)
+      assert type(opus_q) == str, "q value is: %s" % (opus_q,)
+      self.q = opus_q
+
+   def encode( self, force=False ):
+      """
+      Performs audio encoding process.
+
+      :param force:  When :data:`True`, encoding will be done, even if
+                     destination file exists.
+      :type  force:  boolean
+
+      :return: :data:`True` if (re)encoding occurred and no errors,
+               :data:`False` otherwise
+      """
+      if force or util.newer( self.src, self.dst):
+         self._pre_encode()
+         # encode to Opus
+         err = sp.call( 'flac -d "%s" -c -s | opusenc --bitrate %s - "%s"' %
+               (self.src, self.q, self.dst), shell=True, stderr=NULL)
+         if err == -2:  # keyboard interrupt
+            os.remove(self.dst) # clean-up partial file
+            raise KeyboardInterrupt
+         return self._check_err( err, "OGG encoder failed:" )
+      else:
+         return False
+
+   def tag( self, tags):
+      """
+      No-op, since there are presently no tools to tag after encoding.
+
+      :return: :data:`True`
+      """
+      return True
+
+   def set_cover( self, force=False, resize=False ):
+      """
+      No-op, since there are presently no tools to tag after encoding.
+
+      :return: :data:`True`
+      """
+      return True
+
 
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
